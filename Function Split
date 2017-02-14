@@ -1,0 +1,39 @@
+CREATE FUNCTION [dbo].[fnSplit] (
+ @txt VARCHAR(MAX)
+,@delimitador VARCHAR(5)
+,@posicao INT 
+)
+Returns varchar(200)
+AS 
+BEGIN
+
+DECLARE @count INT = 1
+	,@campo VARCHAR(200) = ''
+	,@lencampo INT = 1
+
+WHILE @count <= @posicao
+BEGIN
+
+		IF (
+				CHARINDEX(@delimitador, substring(@txt, @lencampo, LEN(@txt))) <= 0
+				AND RIGHT(rtrim(@txt), 1) <> @delimitador
+				)
+		BEGIN
+			SET @campo = SUBSTRING(REVERSE(@txt), 1, charindex(@delimitador, REVERSE(@txt)))
+			SET @campo = REVERSE(@campo)
+
+			BREAK;
+		END
+		ELSE
+			SET @campo = SUBSTRING(@txt, @lencampo, CHARINDEX(@delimitador, substring(@txt, @lencampo, LEN(@txt))))
+
+		SET @lencampo += len(@campo)
+
+
+		SET @count += 1
+
+END
+
+Return replace(@campo, @delimitador, '')
+
+END 
